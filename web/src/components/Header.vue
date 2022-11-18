@@ -77,7 +77,7 @@ export default defineComponent({
             window.scrollTo(0, 0)
         },
         lagLogin: () => {
-            console.log(that.lagLogin)
+            // console.log(that.lagLogin)
         }
     },
     methods: {

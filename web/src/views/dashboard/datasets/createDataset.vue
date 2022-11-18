@@ -35,9 +35,9 @@
                     </el-form-item>
                     <el-form-item prop="license">
                         <label class="label" for="license">
-                            License
+                            Data schema
 			                <div class="flex flex-row">
-                                <el-input v-model="ruleForm.license" placeholder="License" />
+                                <el-input v-model="ruleForm.license" placeholder="Data schema" />
                             </div>
                         </label>
                     </el-form-item>

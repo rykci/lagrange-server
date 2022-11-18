@@ -62,17 +62,18 @@
                         <el-card class="box-card">
                             <template #header>
                                 <div class="card-header">
-                                    <img src="@/assets/images/dashboard/people_01.png" alt="">
+                                    <img src="@/assets/images/dashboard/people.png" alt="">
                                     <span>27</span>
                                 </div>
                             </template>
                             <div class="text">
-                                <i class="icon icon_text"></i> {{list.name}}
+                                <i class="icon icon_text"></i> 
+                                <p class="ellipsis">{{list.name}}</p>
                             </div>
                             <div class="text">
                                 <el-row :gutter="6">
                                     <el-col :xs="24" :sm="12" :md="12" :lg="8" :xl="8">
-                                        <router-link to="">
+                                        <router-link to="" class="ellipsis">
                                             {{list.data_schema}}
                                         </router-link>
                                     </el-col>
@@ -448,6 +449,11 @@ export default defineComponent({
                                             }
                                         }
                                     }
+                                }
+                                .ellipsis{
+                                    overflow: hidden;
+                                    text-overflow: ellipsis;
+                                    word-spacing: normal;
                                 }
                             }  
                         }

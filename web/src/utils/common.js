@@ -26,7 +26,7 @@ async function sendRequest (apilink, type, jsonObject) {
   } catch (err) {
     console.error(err, err.response)
     messageTip('error', err.response.data.msg || 'Fail')
-    if(err.response.data.status == 401) {
+    if(String(err.response.status).indexOf('4') > -1) {
       store.dispatch('setAccessToken', '')
       store.dispatch('setLogin', false)
       store.dispatch('setNavLogin', false)
