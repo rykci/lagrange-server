@@ -57,8 +57,8 @@
                         />
                     </el-select>
                 </div>
-                <el-row :gutter="32" class="list_body">
-                    <el-col :xs="24" :sm="12" :md="12" :lg="8" :xl="8" v-for="list in 9" :key="list">
+                <el-row :gutter="32" class="list_body" v-loading="listLoad">
+                    <el-col :xs="24" :sm="12" :md="12" :lg="8" :xl="8" v-for="(list, l) in listdata" :key="l">
                         <el-card class="box-card">
                             <template #header>
                                 <div class="card-header">
@@ -67,13 +67,13 @@
                                 </div>
                             </template>
                             <div class="text">
-                                <i class="icon icon_text"></i> Helsinki - NLP/tatoeba_mt
+                                <i class="icon icon_text"></i> {{list.name}}
                             </div>
                             <div class="text">
                                 <el-row :gutter="6">
-                                    <el-col :xs="24" :sm="12" :md="12" :lg="8" :xl="8" v-for="(l, index) in dataList.sizes.slice(0, 2)" :key="index">
+                                    <el-col :xs="24" :sm="12" :md="12" :lg="8" :xl="8">
                                         <router-link to="">
-                                            {{l}}
+                                            {{list.data_schema}}
                                         </router-link>
                                     </el-col>
                                 </el-row>
@@ -83,13 +83,14 @@
                             </div>
                         </el-card>
                     </el-col>
+                    <p v-if="total<1" class="list_nodata">No Data</p>
                 </el-row>
-                <el-pagination :current-page="currentPage1"
-                    :page-size="100"
+                <el-pagination :current-page="currentPage1" v-if="false"
+                    :page-size="20"
                     :small="small"
                     :background="background"
                     layout="prev, pager, next"
-                    :total="1000"
+                    :total="total"
                     @size-change="handleSizeChange"
                     @current-change="handleCurrentChange"
                 />
@@ -99,7 +100,7 @@
 </template>
 <script>
 let that
-import { defineComponent } from 'vue'
+import { defineComponent, getCurrentInstance } from 'vue'
 export default defineComponent({
     name: 'Datasets',
     data() {
@@ -137,16 +138,32 @@ export default defineComponent({
             currentPage1: 1,
             small: false,
             background: false,
+            system: getCurrentInstance().appContext.config.globalProperties,
+            listLoad: true,
+            listdata: [],
+            total: 0
         };
     },
     components: { },
     methods: {
         handleSizeChange(val) {},
         handleCurrentChange(val) {},
+        async init () {
+            that.listLoad = true
+            const listRes = await that.system.$commonFun.sendRequest(`${process.env.VUE_APP_BASEAPI}dataset`, 'get')
+            if (listRes) {
+                that.listdata = listRes.datasets || []
+                that.total = listRes.datasets.length
+            }
+            await that.system.$commonFun.timeout(500)
+            that.listLoad = false
+        }
     },
-    mounted() {
+    mounted() {},
+    activated() {
         that = this
-    },
+        that.init()
+    }
 })
 </script>
 
@@ -333,6 +350,7 @@ export default defineComponent({
             }
             .list_body{
                 padding: 0.2rem 0;
+                min-height: 200px;
                 .el-col{
                     margin: 0.16rem 0;
                     .box-card{
@@ -476,6 +494,14 @@ export default defineComponent({
                             }
                         }
                     }
+                }
+                .list_nodata{
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    width: 100%;
+                    height: 200px;
+                    font-size: 18px;
                 }
             }
             .el-pagination{

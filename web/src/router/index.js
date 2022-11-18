@@ -7,6 +7,7 @@ const home = () => import ("@/components/Home");
 const dashboard = () => import ("@/views/dashboard/index");
 const main = () => import ("@/views/dashboard/main/index");
 const datasets = () => import ("@/views/dashboard/datasets/index");
+const datasetsCreate = () => import ("@/views/dashboard/datasets/createDataset");
 const spaces = () => import ("@/views/dashboard/spaces/index");
 const personalCenter = () => import ("@/views/dashboard/personalCenter/index");
 
@@ -33,6 +34,11 @@ const routes = [{
                     path: '/dashboard/dataset',
                     name: 'datasets',
                     component: datasets
+                },
+                {
+                    path: '/dashboard/create_dataset',
+                    name: 'datasetsCreate',
+                    component: datasetsCreate
                 },
                 {
                     path: '/dashboard/spaces',

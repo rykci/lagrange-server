@@ -4,6 +4,7 @@ import { ElMessage } from 'element-plus'
 
 async function sendRequest (apilink, type, jsonObject) {
   // axios.defaults.timeout = 60000
+  axios.defaults.headers.common['Authorization'] = 'Bearer ' + store.state.accessToken
   try {
     let response
     switch (type) {
@@ -23,7 +24,14 @@ async function sendRequest (apilink, type, jsonObject) {
         return response.data
     }
   } catch (err) {
-    console.error(err)
+    console.error(err, err.response)
+    messageTip('error', err.response.data.msg || 'Fail')
+    if(err.response.data.status == 401) {
+      store.dispatch('setAccessToken', '')
+      store.dispatch('setLogin', false)
+      store.dispatch('setNavLogin', false)
+      store.dispatch('setMetaAddress', '')
+    }
   }
 }
 
@@ -106,7 +114,7 @@ async function performSignin (sig) {
     const reqOpts = [store.state.metaAddress, sig]
     const response = await sendRequest(`${process.env.VUE_APP_BASEAPI}login`, 'post', reqOpts)
     if (response) {
-      // store.dispatch('setLogin', response.access_token)
+      store.dispatch('setAccessToken', response.access_token)
       store.dispatch('setLogin', true)
       return true
     }

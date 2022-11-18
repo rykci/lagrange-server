@@ -127,11 +127,11 @@
                 <div class="list">
                     <div class="title">
                         <i class="icon icon_datasets"></i>
-                        Datasets <span>7</span>
+                        Datasets <span>{{dataSetIndex}}</span>
                     </div>
                 </div>
-                <el-row :gutter="32" class="list_body">
-                    <el-col :xs="24" :sm="12" :md="12" :lg="8" :xl="8" v-for="list in 3" :key="list">
+                <el-row :gutter="32" class="list_body" v-loading="listLoad">
+                    <el-col :xs="24" :sm="12" :md="12" :lg="8" :xl="8" v-for="(list, l) in listdata" :key="l">
                         <el-card class="box-card">
                             <template #header>
                                 <div class="card-header">
@@ -139,13 +139,13 @@
                                 </div>
                             </template>
                             <div class="text">
-                                <i class="icon icon_text"></i> Helsinki - NLP/tatoeba_mt
+                                <i class="icon icon_text"></i> {{list.name}}
                             </div>
                             <div class="text">
                                 <el-row :gutter="6">
-                                    <el-col :xs="24" :sm="12" :md="12" :lg="8" :xl="8" v-for="(l, index) in dataList.sizes.slice(0, 2)" :key="index">
+                                    <el-col :xs="24" :sm="12" :md="12" :lg="8" :xl="8" :key="index">
                                         <router-link to="">
-                                            {{l}}
+                                            {{list.data_schema}}
                                         </router-link>
                                     </el-col>
                                 </el-row>
@@ -210,7 +210,10 @@ export default defineComponent({
             info: {
                 address: '',
                 balance: ''
-            }
+            },
+            dataSetIndex: 0,
+            listdata: [],
+            listLoad: false
         };
     },
     watch: {
@@ -234,6 +237,7 @@ export default defineComponent({
                 // await that.system.$commonFun.timeout(500)
                 if (that.lagLogin) that.loading = false
                 else await that.signIn()
+                that.getdataList()
             })
         },
         async signIn () {
@@ -246,6 +250,16 @@ export default defineComponent({
             that.system.$commonFun.messageTip('error', 'Switch to FEVM Wallaby!')
             that.$store.dispatch('setNavLogin', false)
         },
+        async getdataList () {
+            that.listLoad = true
+            const listRes = await that.system.$commonFun.sendRequest(`${process.env.VUE_APP_BASEAPI}dataset`, 'get')
+            if (listRes) {
+                that.listdata = listRes.datasets || []
+                that.dataSetIndex = listRes.datasets.length
+            }
+            await that.system.$commonFun.timeout(500)
+            that.listLoad = false
+        },
         fn () {
             document.addEventListener('visibilitychange', function () {
                 that.prevType = !document.hidden
@@ -257,6 +271,7 @@ export default defineComponent({
                 that.$store.dispatch('setMetaAddress', account[0])
                 that.$store.dispatch('setNavLogin', false)
                 that.$store.dispatch('setLogin', false)
+                that.$store.dispatch('setAccessToken', '')
                 window.location.reload()
             })
             // networkChanged
@@ -272,10 +287,12 @@ export default defineComponent({
                 that.$store.dispatch('setMetaAddress', '')
                 that.$store.dispatch('setNavLogin', false)
                 that.$store.dispatch('setLogin', false)
+                that.$store.dispatch('setAccessToken', '')
             })
         }
     },
-    mounted() {
+    mounted() {},
+    activated() {
         that = this
         that.fn()
         if (that.navLogin || !!that.metaAddress) that.isLogin()
