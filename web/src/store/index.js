@@ -4,7 +4,8 @@ export default createStore({
   state: {
     metaAddress: sessionStorage.getItem('metaAddressLag') || '',
     navLogin: sessionStorage.getItem('navLogin') || false,
-    lagLogin: sessionStorage.getItem('loginLag') || false
+    lagLogin: sessionStorage.getItem('loginLag') || false,
+    accessToken: sessionStorage.getItem('access_token_lag') || ''
   },
   mutations: {
     SET_METAADDRESS: (state, metaAddress) => {
@@ -19,6 +20,10 @@ export default createStore({
       state.lagLogin = lagLogin
       sessionStorage.setItem('loginLag', lagLogin)
     },
+    SET_ACCESSTOKEN: (state, accessToken) => {
+      state.accessToken = accessToken
+      sessionStorage.setItem('access_token_lag', accessToken)
+    },
   },
   actions: {
     setMetaAddress ({commit}, metaAddress) {
@@ -29,6 +34,9 @@ export default createStore({
     },
     setLogin ({commit}, lagLogin) {
       commit('SET_LAGLOGIN', lagLogin)
+    },
+    setAccessToken ({commit}, accessToken) {
+      commit('SET_ACCESSTOKEN', accessToken)
     },
   },
   getters: {               
