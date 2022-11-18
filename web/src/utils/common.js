@@ -86,7 +86,8 @@ async function sign (nonce) {
   store.dispatch('setLogin', false)
   const rightnow = (Date.now() / 1000).toFixed(0)
   const sortanow = rightnow - (rightnow % 600)
-  const buff = Buffer.from("Signing in to " + document.domain + " at " + sortanow, 'utf-8')
+  const local = '18.221.71.211'
+  const buff = Buffer.from("Signing in to " + local + " at " + sortanow, 'utf-8')
   let signature = null
   await ethereum.request({
     method: 'personal_sign',
@@ -104,10 +105,10 @@ async function performSignin (sig) {
   try {
     const reqOpts = [store.state.metaAddress, sig]
     const response = await sendRequest(`${process.env.VUE_APP_BASEAPI}login`, 'post', reqOpts)
-    // const response = {login:true}
-    if (response.login === true) {
-      store.dispatch('setLogin', response.login)
-      return response.login
+    if (response) {
+      // store.dispatch('setLogin', response.access_token)
+      store.dispatch('setLogin', true)
+      return true
     }
     ElMessage.error(response.message ? response.message : 'Fail')
     return null

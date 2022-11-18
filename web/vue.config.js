@@ -104,10 +104,13 @@ module.exports = {
     open: true, //配置自动启动浏览器
     // proxy: { 
     //   '/api': {
-    //     target: 'xxxx',
+    //     target: 'http://18.221.71.211:5000/',
     //     ws: true,
     //     changeOrigin: true,
-    //     secure: false
+    //     secure: false,
+    //     pathRewrite: {
+    //       '^/api': ''
+    //     }
     //   },
     // }
   },
