@@ -141,6 +141,12 @@ a:focus {
 .el-message .el-icon{
     font-size: 35px;
 }
+.el-message .el-message__closeBtn .icon{
+    width: 20px;
+    height: 20px;
+    color: #303133;
+    cursor: pointer;
+}
 
 .landing{
     width: 17rem;
