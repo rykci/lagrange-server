@@ -32,7 +32,7 @@ async function timeout (delay) {
 }
 
 async function Init(callback){
-  if (typeof window.ethereum === undefined) {
+  if (typeof window.ethereum === 'undefined') {
     window.open('https://metamask.io/download.html')
     alert("Consider installing MetaMask!");
   } else {
@@ -86,7 +86,8 @@ async function sign (nonce) {
   store.dispatch('setLogin', false)
   const rightnow = (Date.now() / 1000).toFixed(0)
   const sortanow = rightnow - (rightnow % 600)
-  const buff = Buffer.from("Signing in to " + document.domain + " at " + sortanow, 'utf-8')
+  const local = '18.221.71.211'
+  const buff = Buffer.from("Signing in to " + local + " at " + sortanow, 'utf-8')
   let signature = null
   await ethereum.request({
     method: 'personal_sign',
@@ -104,10 +105,10 @@ async function performSignin (sig) {
   try {
     const reqOpts = [store.state.metaAddress, sig]
     const response = await sendRequest(`${process.env.VUE_APP_BASEAPI}login`, 'post', reqOpts)
-    // const response = {login:true}
-    if (response.login === true) {
-      store.dispatch('setLogin', response.login)
-      return response.login
+    if (response) {
+      // store.dispatch('setLogin', response.access_token)
+      store.dispatch('setLogin', true)
+      return true
     }
     ElMessage.error(response.message ? response.message : 'Fail')
     return null
@@ -119,21 +120,27 @@ async function performSignin (sig) {
 }
 
 const Web3 = require('web3');
-if (window.ethereum) {
-  web3 = new Web3(ethereum);
-  web3.setProvider(ethereum);
+let web3Init
+if (typeof window.ethereum === 'undefined') {
+  window.open('https://metamask.io/download.html')
+  alert("Consider installing MetaMask!");
+} else { 
+  if (window.ethereum) {
+    web3 = new Web3(ethereum);
+    web3.setProvider(ethereum);
+  }
+  else if (window.web3) {
+    web3 = window.web3;
+    console.log("Injected web3 detected.");
+  }
+  else {
+    var currentProvider = web3.currentProvider;
+    web3 = new Web3(currentProvider);
+    web3.setProvider(currentProvider);
+    console.log("No web3 instance injected, using Local web3.");
+  }
+  web3Init = web3
 }
-else if (window.web3) {
-  web3 = window.web3;
-  console.log("Injected web3 detected.");
-}
-else {
-  var currentProvider = web3.currentProvider;
-  web3 = new Web3(currentProvider);
-  web3.setProvider(currentProvider);
-  console.log("No web3 instance injected, using Local web3.");
-}
-const web3Init = web3
 
 export default {
   sendRequest,
