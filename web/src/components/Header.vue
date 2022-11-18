@@ -41,7 +41,8 @@
                     </el-menu-item>
                     <el-menu-item index="/dashboard/personal_center">
                         &nbsp;
-                        <img :src="people_img" class="people" width="30" height="30" alt="">
+                        <span v-if="!lagLogin" class="loginBtn">Login</span>
+                        <img v-else :src="people_img" class="people" width="30" height="30" alt="">
                     </el-menu-item>
                 </el-menu>
             </el-col>
@@ -81,6 +82,14 @@ export default defineComponent({
     },
     mounted() {
         that = this
+    },
+    computed: {
+        metaAddress () {
+            return this.$store.state.metaAddress
+        },
+        lagLogin () {
+            return String(this.$store.state.lagLogin)==='true'
+        }
     }
 })
 </script>
@@ -189,6 +198,19 @@ export default defineComponent({
                     .icon_solutions{
                         background: url(../assets/images/icons/icon_5.png) no-repeat left center;
                         background-size: 17px;
+                    }
+                    .loginBtn{
+                        padding: 0.1rem 0.2rem;
+                        margin: 0;
+                        background-color: #307aff;
+                        font-weight: normal;
+                        line-height: 1;
+                        color: #fff;
+                        border-radius: 0.05rem;
+                        &:hover{
+                            opacity: .9;
+                            cursor: pointer;
+                        }
                     }
                     &.is-active, &:hover{
                         color: #94c0ff !important;

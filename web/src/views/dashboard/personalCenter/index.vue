@@ -241,7 +241,10 @@ export default defineComponent({
             if (parseInt(chainId, 16) === 31415) {
                 const lStatus = await that.system.$commonFun.login()
                 if(lStatus) that.loading = false
+                return false
             } else that.loadingText = 'Switch to FEVM Wallaby!'
+            that.system.$commonFun.messageTip('error', 'Switch to FEVM Wallaby!')
+            that.$store.dispatch('setNavLogin', false)
         },
         fn () {
             document.addEventListener('visibilitychange', function () {

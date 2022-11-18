@@ -110,13 +110,21 @@ async function performSignin (sig) {
       store.dispatch('setLogin', true)
       return true
     }
-    ElMessage.error(response.message ? response.message : 'Fail')
+    messageTip('error', response.message || 'Fail')
     return null
   } catch (err) {
     console.log('login err:', err)
-    ElMessage.error('Fail')
+    messageTip('error', 'Fail')
     return null
   }
+}
+
+async function messageTip (type, text) {
+  ElMessage({
+    showClose: true,
+    message: text,
+    type: type,
+  })
 }
 
 const Web3 = require('web3');
@@ -147,5 +155,6 @@ export default {
   timeout,
   Init,
   web3Init,
-  login
+  login,
+  messageTip
 }
