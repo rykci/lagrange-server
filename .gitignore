@@ -129,4 +129,4 @@ dmypy.json
 .pyre/
 
 #remove local settings
-.local-server.sh
+local-server.sh
