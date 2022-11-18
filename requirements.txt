@@ -7,4 +7,5 @@ mock
 gevent
 gunicorn
 flask_sslify
+PyMySQL
 
