@@ -8,4 +8,6 @@ gevent
 gunicorn
 flask_sslify
 PyMySQL
+flask_script
+Flask-Cors==3.0.10
 

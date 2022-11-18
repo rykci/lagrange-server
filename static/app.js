@@ -6,7 +6,6 @@ let signer;
 
 function login() {
 
-    console.log('oh hey there');
     console.log(document.domain);
 
     // signer.signMessage("hello");
