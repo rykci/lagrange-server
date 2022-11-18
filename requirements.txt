@@ -1,7 +1,7 @@
 flask
 flask-sqlalchemy
 flask_jwt_extended
-web3
+web3==5.31.1
 MarkupSafe==2.0.1
 mock
 gevent
@@ -10,4 +10,6 @@ flask_sslify
 PyMySQL
 flask_script
 Flask-Cors==3.0.10
-
+werkzeug
+python-mcs-sdk==0.1.5
+python-dotenv~=0.21.0

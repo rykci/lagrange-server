@@ -8,6 +8,8 @@ from eth_account.messages import defunct_hash_message
 
 from flask_jwt_extended import JWTManager, jwt_required, create_access_token, get_jwt_identity, set_access_cookies
 from flask_cors import CORS
+
+from dataset.file import File
 from ethhelper import *
 
 import random
@@ -36,6 +38,9 @@ app.config['JWT_SECRET_KEY'] = ''.join(random.choice(string.ascii_lowercase) for
 # app.config['JWT_COOKIE_SECURE'] = True
 # app.config['JWT_ACCESS_COOKIE_PATH'] = '/api/'
 # app.config['JWT_COOKIE_CSRF_PROTECT'] = True
+app.config['MAX_CONTENT_LENGTH'] = 1024 * 1024 * 100
+app.config['UPLOAD_PATH'] = 'uploads'
+
 db = SQLAlchemy(app)
 jwt = JWTManager(app)
 
@@ -61,7 +66,6 @@ class User(db.Model):
     nonce = db.Column(db.Integer(), nullable=False, default=generate_nonce, )
 
 
-
 def get_user(public_address):
     user: User = User.query.filter_by(public_address=public_address).first()
     return user
@@ -74,24 +78,34 @@ class Dataset(db.Model):
     data_schema = db.Column(db.String(254))
     user_id = db.Column(Integer, ForeignKey('user.id'))
 
+    def to_dict(self):
+        return {
+            "data_schema": self.data_schema,
+            "name": self.name,
+            "id": self.id,
+        }
+
 
 @app.route('/')
 def landing():
     return render_template("index.html")
 
 
-@app.route('/secret')
-@jwt_required()
-def secret():
-    current_user = get_jwt_identity()
-    return jsonify(logged_in_as=current_user), 200
+@app.route('/', methods=['POST'])
+def upload_file():
+    uploaded_file = request.files['file']
+    if uploaded_file.filename != '':
+        uploaded_file.save(uploaded_file.filename)
+    files = File(uploaded_file.filename, os.path.abspath(path= uploaded_file.filename) )
+    files.stream_upload()
+    return files.filename
 
 
 @app.route('/dataset', methods=['POST'])
 @jwt_required()
 def create_dataset():
     public_address = get_jwt_identity()
-    user:User = get_user(public_address)
+    user: User = get_user(public_address)
 
     name = request.form.get("name")
     data_schema = request.form.get("data_schema")
@@ -104,6 +118,18 @@ def create_dataset():
     db.session.refresh(dataset)
 
     return jsonify(dataset=name), 200
+
+
+@app.route('/dataset', methods=['Get'])
+@jwt_required()
+def get_datasets():
+    public_address = get_jwt_identity()
+    user = get_user(public_address)
+    datasets = Dataset.query.filter_by(user_id=user.id)
+    data_list = []
+    for dataset in datasets:
+        data_list.append(dataset.to_dict())
+    return jsonify(datasets=data_list), 200
 
 
 @app.route('/login', methods=['POST'])
@@ -128,7 +154,7 @@ def login():
 
     if signer == public_address:
         print("[+] this is fine " + str(signer))
-        user:User = get_user(public_address)
+        user: User = get_user(public_address)
         if user:
             print("[+] Found user " + user.public_address)
         else:
