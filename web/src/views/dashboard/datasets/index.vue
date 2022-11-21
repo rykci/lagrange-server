@@ -145,7 +145,12 @@ export default defineComponent({
             total: 0
         };
     },
-    components: { },
+    components: {},
+    watch: {
+        lagLogin: () => {
+            if (!that.lagLogin) that.init()
+        }
+    },
     methods: {
         handleSizeChange(val) {},
         handleCurrentChange(val) {},
@@ -166,6 +171,11 @@ export default defineComponent({
     activated() {
         that = this
         that.init()
+    },
+    computed: {
+        lagLogin () {
+            return String(this.$store.state.lagLogin)==='true'
+        }
     }
 })
 </script>
