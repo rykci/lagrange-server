@@ -1,0 +1,6 @@
+exports.getBalance = require("./simple-coin/get-balance")
+exports.getAddress = require("./get-address")
+exports.sendCoin = require("./simple-coin/send-coin")
+exports.balance = require("./lagrange-token/get-balance")
+exports.mint = require("./lagrange-token/mint-token")
+exports.faucet = require("./faucet/get-token")
