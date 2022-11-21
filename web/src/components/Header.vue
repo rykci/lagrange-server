@@ -50,6 +50,7 @@
                             </router-link>
                         </template>
                         <el-menu-item index="/dashboard/create_dataset">+ New Dataset</el-menu-item>
+                        <!-- <el-menu-item index="sign_out">Sign Out</el-menu-item> -->
                     </el-sub-menu>
                 </el-menu>
             </el-col>
@@ -68,7 +69,8 @@ export default defineComponent({
             people_img: require("@/assets/images/dashboard/people.png"),
             searchValue: '',
             activeIndex: '',
-            bodyWidth: document.body.clientWidth>=992?false:true
+            bodyWidth: document.body.clientWidth>=992?false:true,
+            system: getCurrentInstance().appContext.config.globalProperties
         };
     },
     watch: {
@@ -84,9 +86,14 @@ export default defineComponent({
         header_logo() {
             that.$router.push({name: 'main'})
         },
-        handleSelect(key, keyPath) {
+        async handleSelect(key, keyPath) {
             // console.log(key) //  
             if(key === '/dashboard/personal_center') that.$store.dispatch('setNavLogin', true)
+            else if(key === 'sign_out') {
+                that.system.$commonFun.signOutFun()
+                // await that.system.$commonFun.timeout(200)
+                window.location.reload()
+            }
             else that.$store.dispatch('setNavLogin', false)
         }
     },
