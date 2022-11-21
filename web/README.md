@@ -28,7 +28,7 @@ The build artifacts will be stored in the `dist_test/dist_prod` directory.
 
    Since this project is based on nodejs, you need to make preparations for nodejs. Before running the project, please ensure that the following applications have been installed in the system:
 
-   (1)、Node (Version v14.15.0 of Node was used for this project). Please refer to:[Download and install node.](https://nodejs.org/en/download/)
+   (1)、Node (Version v14.18.2 of Node was used for this project). Please refer to:[Download and install node.](https://nodejs.org/en/download/)
 
 ### Customize configuration
 See [Configuration Reference](https://cli.vuejs.org/config/).
