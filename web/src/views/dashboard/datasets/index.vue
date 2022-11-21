@@ -151,6 +151,8 @@ export default defineComponent({
         handleCurrentChange(val) {},
         async init () {
             that.listLoad = true
+            that.listdata = []
+            that.total = 0
             const listRes = await that.system.$commonFun.sendRequest(`${process.env.VUE_APP_BASEAPI}dataset`, 'get')
             if (listRes) {
                 that.listdata = listRes.datasets || []

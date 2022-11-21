@@ -292,7 +292,7 @@ export default defineComponent({
                 that.loading = true
                 that.loadingText = 'Switch to FEVM Wallaby!'
                 that.system.$commonFun.signOutFun()
-                window.location.reload()
+                // window.location.reload()
             })
         },
         changeNet (rows) {
