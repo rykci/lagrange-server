@@ -1,7 +1,7 @@
 ##  lagrange-server
 lagrange-server is the Python Backend for lagrange platform
 
-# How to start the backedn
+# How to start the backend
 ```shell
 chmod +x run-server.sh
 ```
