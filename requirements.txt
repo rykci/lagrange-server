@@ -11,5 +11,6 @@ PyMySQL
 flask_script
 Flask-Cors==3.0.10
 werkzeug
+cryptography
 python-mcs-sdk==0.1.5
 python-dotenv~=0.21.0
