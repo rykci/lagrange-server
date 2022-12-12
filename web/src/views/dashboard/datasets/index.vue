@@ -145,12 +145,19 @@ export default defineComponent({
             total: 0
         };
     },
-    components: { },
+    components: {},
+    watch: {
+        lagLogin: () => {
+            if (!that.lagLogin) that.init()
+        }
+    },
     methods: {
         handleSizeChange(val) {},
         handleCurrentChange(val) {},
         async init () {
             that.listLoad = true
+            that.listdata = []
+            that.total = 0
             const listRes = await that.system.$commonFun.sendRequest(`${process.env.VUE_APP_BASEAPI}dataset`, 'get')
             if (listRes) {
                 that.listdata = listRes.datasets || []
@@ -164,6 +171,11 @@ export default defineComponent({
     activated() {
         that = this
         that.init()
+    },
+    computed: {
+        lagLogin () {
+            return String(this.$store.state.lagLogin)==='true'
+        }
     }
 })
 </script>

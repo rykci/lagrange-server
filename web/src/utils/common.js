@@ -1,6 +1,7 @@
 import store from '../store'
 import axios from 'axios'
 import { ElMessage } from 'element-plus'
+let lastTime = 0
 
 async function sendRequest (apilink, type, jsonObject) {
   // axios.defaults.timeout = 60000
@@ -27,10 +28,7 @@ async function sendRequest (apilink, type, jsonObject) {
     console.error(err, err.response)
     messageTip('error', err.response.data.msg || 'Fail')
     if(String(err.response.status).indexOf('4') > -1) {
-      store.dispatch('setAccessToken', '')
-      store.dispatch('setLogin', false)
-      store.dispatch('setNavLogin', false)
-      store.dispatch('setMetaAddress', '')
+      signOutFun()
     }
   }
 }
@@ -83,18 +81,29 @@ async function login () {
     const accounts = await ethereum.request({ method: 'eth_requestAccounts' })
     store.dispatch('setMetaAddress', accounts[0])
   }
-  
+
+  const time = await throttle()
+  if (!time) return false
   const signature = await sign()
   if (!signature) return false
   const token = await performSignin(signature)
   return !!token
 }
 
+async function throttle(){
+  // Prevent multiple signatures
+  let now = new Date().valueOf();
+  if (lastTime > 0 && (now-lastTime) <= 2000) return false
+  lastTime = now
+  return true
+}
+
+
 async function sign (nonce) {
   store.dispatch('setLogin', false)
   const rightnow = (Date.now() / 1000).toFixed(0)
   const sortanow = rightnow - (rightnow % 600)
-  const local = '18.221.71.211'
+  const local = process.env.VUE_APP_DOMAINNAME
   const buff = Buffer.from("Signing in to " + local + " at " + sortanow, 'utf-8')
   let signature = null
   await ethereum.request({
@@ -105,6 +114,7 @@ async function sign (nonce) {
   }).catch(err => {
     console.log(err)
     signature = ''
+    signOutFun()
   })
   return signature
 }
@@ -133,6 +143,13 @@ async function messageTip (type, text) {
     message: text,
     type: type,
   })
+}
+
+async function signOutFun () {
+  store.dispatch('setAccessToken', '')
+  store.dispatch('setLogin', false)
+  store.dispatch('setNavLogin', false)
+  store.dispatch('setMetaAddress', '')
 }
 
 const Web3 = require('web3');
@@ -164,5 +181,6 @@ export default {
   Init,
   web3Init,
   login,
-  messageTip
+  messageTip,
+  signOutFun
 }

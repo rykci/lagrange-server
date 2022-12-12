@@ -1,4 +1,4 @@
-# Lagrange
+# Lagrange web
 
 **Technology stack：** vue3 + vuex + vue-router + webpack + sass + element-plus
 
