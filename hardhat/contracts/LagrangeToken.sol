@@ -12,5 +12,9 @@ contract LagrangeToken is ERC20Capped, Ownable {
         _mint(address(this), TOKEN_CAP * 15 / 100);  // premint 15%
     }
 
+    function withdraw(uint amount) public onlyOwner {
+        require (amount <= balanceOf(address(this)), 'Not enough balance to withdraw');
+        transfer(msg.sender, amount);
+    }
 
 }
