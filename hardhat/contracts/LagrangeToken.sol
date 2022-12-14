@@ -4,17 +4,13 @@ pragma solidity ^0.8.4;
 import "@openzeppelin/contracts/token/ERC20/extensions/ERC20Capped.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 
-contract LagrangeToken is ERC20Capped, Ownable {
+contract LagrangeDAOToken is ERC20Capped, Ownable {
     uint public constant TOKEN_CAP = 1 ether * 10 ** 9;
 
 
-    constructor() ERC20Capped(TOKEN_CAP) ERC20("Lagrange Token", "LAG") {
-        _mint(address(this), TOKEN_CAP * 15 / 100);  // premint 15%
+    constructor(address holder) ERC20Capped(TOKEN_CAP) ERC20("Lagrange DAO Token", "LAD") {
+        ERC20._mint(holder, TOKEN_CAP * 15 / 100);  // premint 15%
     }
 
-    function withdraw(uint amount) public onlyOwner {
-        require (amount <= balanceOf(address(this)), 'Not enough balance to withdraw');
-        transfer(msg.sender, amount);
-    }
 
 }
