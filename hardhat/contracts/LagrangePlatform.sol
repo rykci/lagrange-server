@@ -2,16 +2,25 @@
 pragma solidity ^0.8.4;
 
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 
-contract LagrangePlatform is Ownable {
+
+contract LagrangePlatform is Initializable, OwnableUpgradeable {
     IERC20 public lagrangeToken;
 
     event DataUpload(address uploader, uint size, uint reward);
     event ModelUpload(address uploader, uint reward);
 
-    constructor(address lagrangeTokenAddress) {
+    /// @custom:oz-upgrades-unsafe-allow constructor
+    constructor() {
+        _disableInitializers();
+    }
+
+    function initialize(address lagrangeTokenAddress) initializer public {
         lagrangeToken = IERC20(lagrangeTokenAddress);
+        __Ownable_init();
     }
 
     function rewardDataUpload(address uploader, uint size) public onlyOwner {
