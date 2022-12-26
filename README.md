@@ -1,12 +1,19 @@
-##  lagrange-server
+#  Lagrange server
 lagrange-server is the Python Backend for lagrange platform
 
-# Backend Deployment
+## Backend Deployment
+### create your own .env
+copy _.env.template_ to _.env_
+
+update the filed to your own value.
+
+### Start the server
+
 ```shell
 chmod +x run-server.sh
 ```
 
-You need to change the _DOMAIN_ value to your ip, if you want to deploy it as a server
+You need to change the _DOMAIN_ value to your ip, if you want to deploy it as a server on production
 
 # Frontend Deployment
 
