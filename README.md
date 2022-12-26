@@ -1,16 +1,20 @@
 ##  lagrange-server
 lagrange-server is the Python Backend for lagrange platform
 
-# How to start the backend
+# Backend Deployment
 ```shell
 chmod +x run-server.sh
 ```
 
 You need to change the _DOMAIN_ value to your ip, if you want to deploy it as a server
 
-# frontend
+# Frontend Deployment
 
 ```shell
 cd web
+docker build -t lagrangedao/lagrange-dao-web . 
+docker run  -p 8082:8082 lagrangedao/lagrange-dao-web
 ```
-Follow the instructions in the web folder.
+
+Now you can visit the site at http://127.0.0.1:8082
+
