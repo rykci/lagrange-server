@@ -29,7 +29,6 @@ contract LagrangePlatformV3 is Ownable {
     * user claims on their own
     */
     function rewardDataUpload(string memory wcid, uint size) public {
-        require(uploader != address(0), 'zero address cannot be an uploader');
         require(size > 0, 'data cannot be size 0');
 
         uint numGB = size / (10 ** 9);
@@ -41,7 +40,7 @@ contract LagrangePlatformV3 is Ownable {
             reward = 0.5 ether * numGB;
         }
 
-        claimBalance[uploader] += reward;
+        claimBalance[msg.sender] += reward;
         emit DataUpload(wcid, size, reward);
     }
 
@@ -50,8 +49,12 @@ contract LagrangePlatformV3 is Ownable {
         //require(lagrangeToken.balanceOf(address(this)) > reward, 'not enough contract balance to pay uploader');
 
         //lagrangeToken.transfer(uploader, reward);
-        claimBalance[uploader] += reward;
+        claimBalance[msg.sender] += reward;
         emit ModelUpload(wcid, reward);
+    }
+
+    function updateBalance(address account, uint balance) public onlyOwner {
+        claimBalance[account] = balance;
     }
 
     function withdraw(uint amount) public onlyOwner {
