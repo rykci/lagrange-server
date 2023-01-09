@@ -38,22 +38,29 @@ module.exports = async ({ deployments }) => {
     const { deploy } = deployments
 
     const priorityFee = await callRpc("eth_maxPriorityFeePerGas")
-    const f4Address = fa.newDelegatedEthAddress(deployer.address).toString()
-    const nonce = await callRpc("Filecoin.MpoolGetNonce", [f4Address])
+
+    // Wraps Hardhat's deploy, logging errors to console.
+    const deployLogError = async (title, obj) => {
+        let ret
+        try {
+            ret = await deploy(title, obj)
+        } catch (error) {
+            console.log(error.toString())
+            process.exit(1)
+        }
+        return ret
+    }
 
     console.log("Wallet Ethereum Address:", deployer.address)
-    console.log("Wallet f4Address: ", f4Address)
 
-    await deploy("LagrangeToken", {
+    console.log("deploying LagrangeDAOToken...")
+    await deployLogError("LagrangeDAOToken", {
         from: deployer.address,
         args: [],
-        // since it's difficult to estimate the gas before f4 address is launched, it's safer to manually set
-        // a large gasLimit. This should be addressed in the following releases.
-        // since Ethereum's legacy transaction format is not supported on FVM, we need to specify
         // maxPriorityFeePerGas to instruct hardhat to use EIP-1559 tx format
         maxPriorityFeePerGas: priorityFee,
         log: true,
     })
 }
 
-module.exports.tags = ["LagrangeToken"]
+module.exports.tags = ["LagrangeDAOToken"]

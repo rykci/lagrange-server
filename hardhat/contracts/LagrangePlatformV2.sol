@@ -25,8 +25,8 @@ contract LagrangePlatformV2 is Ownable {
     * user claims on their own
     */
     function rewardDataUpload(address uploader, uint size) public onlyOwner {
-        require(uploader != address(0), 'zero address cannot be an uploader');
-        require(size > 0, 'data cannot be size 0');
+        require(uploader != address(0), "zero address cannot be an uploader");
+        require(size > 0, "data cannot be size 0");
 
         uint numGB = size / (10 ** 9);
 
@@ -55,7 +55,7 @@ contract LagrangePlatformV2 is Ownable {
 
     function claim() public {
         uint claimAmount = claimBalance[msg.sender];
-        require(claimAmount > 0, 'no balance to claim');
+        require(claimAmount > 0, "no balance to claim");
 
         uint contractBalance = lagrangeToken.balanceOf(address(this));
         if (contractBalance < claimAmount) {
@@ -69,7 +69,7 @@ contract LagrangePlatformV2 is Ownable {
     }
 
     function withdraw(uint amount) public onlyOwner {
-        require (amount <= lagrangeToken.balanceOf(address(this)), 'Not enough balance to withdraw');
+        require (amount <= lagrangeToken.balanceOf(address(this)), "Not enough balance to withdraw");
         lagrangeToken.transfer(msg.sender, amount);
     }
 }
