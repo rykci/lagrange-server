@@ -12,16 +12,18 @@ You need:
 
 # Set up
 
-Import your private key to an environment variable in UNIX shell:
+Import your private key and JSON-RPC to an environment variable in UNIX shell:
 
 ```
 export PRIVATE_KEY="0x..."
-```
-
-Set up your JSON-RPC connecgtion:
-
-```
 export JSON_RPC_URL="https://..."
+```
+
+install packages:
+
+```
+pip install web3
+pip install "web3-ethereum-defi[data]"
 ```
 
 # Running
