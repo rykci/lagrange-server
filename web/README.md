@@ -1,12 +1,32 @@
 # Lagrange web
 
 **Technology stack：** vue3 + vuex + vue-router + webpack + sass + element-plus
+## Docker Deployment
+#### Install Docker Compose
 
-## Installation dependency
+https://docs.docker.com/compose/install/
+### Stable
+
+Run the following command to run the latest stable image of lagrange-dao-we
+
+```bash
+docker build -t lagrangedao/lagrange-dao-web .
+docker run  -p 8082:8080 lagrangedao/lagrange-dao-web
+```
+The service will be Available on:
+
+http://127.0.0.1:8082
+
+http://172.17.0.2:8082
+
+Hit CTRL-C to stop the server
+
+## Build from Source
+### Installation dependency
 
 Run `npm install` to generate component.
 
-## Development server
+### Development server
 
 Run `npm run serve` for a dev server. Navigate to `http://localhost:8080/`. The app will automatically reload if you change any of the source files.
 

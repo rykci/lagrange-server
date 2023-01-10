@@ -43,6 +43,7 @@ The Ethereum address will be used otherwise.
 
 Go to the [Wallaby faucet](https://wallaby.network/#faucet), and paste in the f4 address we copied in the previous step. This will send some wallaby testnet FIL to the account.
 
+
 ## Deploy the LagrangeDaoToken Contract
 
 Type in the following command in the terminal:
@@ -54,3 +55,4 @@ yarn hardhat deploy
 This will compile the contract and deploy it to the Wallaby network automatically!
 
 Keep note of the deployed contract address for the next step.
+
