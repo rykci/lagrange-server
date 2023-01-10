@@ -53,7 +53,6 @@ module.exports = async ({ deployments }) => {
 
     console.log("Wallet Ethereum Address:", deployer.address)
 
-    console.log("deploying LagrangeDAOToken...")
     await deployLogError("LagrangeDAOToken", {
         from: deployer.address,
         args: [],
