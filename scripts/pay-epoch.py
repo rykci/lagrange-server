@@ -23,8 +23,8 @@ epoch_block = web3.eth.block_number
 print(f"Connected to blockchain, chain id is {web3.eth.chain_id}. the latest block is {epoch_block:,}")
 
 RECEIPIENT_ADDRESS = "0x31174CE312C34b64eaf75d97bA0cfbEb28E4B45D"
-EPOCH_TIME = 30 # 1 hour
-NUM_EPOCH = 10 # 10000 epochs
+EPOCH_TIME = 60 * 60 # 1 hour
+NUM_EPOCH = 10000 # 10000 epochs
 
 TOKEN_ADDRESS = "0x31174CE312C34b64eaf75d97bA0cfbEb28E4B45D"
 TOKEN_ABI_FILE = open('LagrangeDAOToken.json')
