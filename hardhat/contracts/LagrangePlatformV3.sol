@@ -29,7 +29,7 @@ contract LagrangePlatformV3 is Ownable {
     * user claims on their own
     */
     function rewardDataUpload(string memory wcid, uint size) public {
-        require(size > 0, 'data cannot be size 0');
+        require(size > 0, "data cannot be size 0");
 
         uint numGB = size / (10 ** 9);
 
@@ -58,7 +58,7 @@ contract LagrangePlatformV3 is Ownable {
     }
 
     function withdraw(uint amount) public onlyOwner {
-        require (amount <= lagrangeToken.balanceOf(address(this)), 'Not enough balance to withdraw');
+        require (amount <= lagrangeToken.balanceOf(address(this)), "Not enough balance to withdraw");
         lagrangeToken.transfer(msg.sender, amount);
     }
 }
