@@ -1,5 +1,11 @@
 <template> 
     <section id="dataset" v-loading="loading" :element-loading-text="loadingText">
+        <el-alert type="warning" effect="dark" center show-icon v-if="loadingText">
+            <div slot="title">
+                To use our site, please switch to
+                <span @click="changeNet(31415)">FEVM Wallaby</span>.
+            </div>
+        </el-alert>
         <el-row class="dataset_body">
             <el-col :xs="24" :sm="24" :md="24" :lg="5" :xl="5" class="left">
                 <img :src="logoUrl" class="logo_sidebar" alt="">
@@ -236,22 +242,22 @@ export default defineComponent({
                     that.info.balance = Number(balanceAll).toFixed(0)
                 })
                 // await that.system.$commonFun.timeout(500)
-                if (that.lagLogin) that.loading = false
+                if (that.lagLogin) that.getdataList()
                 else await that.signIn()
-                that.getdataList()
             })
         },
         async signIn () {
             const chainId = await ethereum.request({ method: 'eth_chainId' })
             if (parseInt(chainId, 16) === 31415) {
                 const lStatus = await that.system.$commonFun.login()
-                if(lStatus) that.loading = false
+                if(lStatus) that.getdataList()
                 return false
             } else that.loadingText = 'Switch to FEVM Wallaby!'
-            that.system.$commonFun.messageTip('error', 'Switch to FEVM Wallaby!')
+            // that.system.$commonFun.messageTip('error', 'Switch to FEVM Wallaby!')
             that.$store.dispatch('setNavLogin', false)
         },
         async getdataList () {
+            that.loading = false
             that.listLoad = true
             const listRes = await that.system.$commonFun.sendRequest(`${process.env.VUE_APP_BASEAPI}dataset`, 'get')
             if (listRes) {
@@ -282,13 +288,27 @@ export default defineComponent({
             })
             // 监听metamask网络断开
             ethereum.on('disconnect', (code, reason) => {
-                console.log(`Ethereum Provider connection closed: ${reason}. Code: ${code}`);
+                // console.log(`Ethereum Provider connection closed: ${reason}. Code: ${code}`);
                 that.loading = true
                 that.loadingText = 'Switch to FEVM Wallaby!'
-                that.$store.dispatch('setMetaAddress', '')
-                that.$store.dispatch('setNavLogin', false)
-                that.$store.dispatch('setLogin', false)
-                that.$store.dispatch('setAccessToken', '')
+                that.system.$commonFun.signOutFun()
+                // window.location.reload()
+            })
+        },
+        changeNet (rows) {
+            let text = {
+                chainId: that.system.$commonFun.web3Init.utils.numberToHex(rows),
+                chainName: 'Fevm',
+                rpcUrls: [process.env.VUE_APP_FEVMRPC],
+                blockExplorerUrls: [process.env.VUE_APP_FEVMRPC]
+            }
+            ethereum.request({
+                method: 'wallet_addEthereumChain',
+                params: [text]
+            }).then((res) => {
+                // that.signIn()
+            }).catch((err) => {
+                console.log(err)
             })
         }
     },
@@ -314,10 +334,59 @@ export default defineComponent({
 
 <style lang="scss" scoped>
 #dataset{
+    position: relative;
     color: #333;
     font-size: 18px;
     @media screen and (max-width: 1200px){
         font-size: 16px;
+    }
+    :deep(.el-alert) {
+        position: absolute;
+        left: 0;
+        top: 0;
+        z-index: 2001;
+        .el-alert__icon{
+            @media screen and (min-width: 1600px){
+                font-size: 20px;
+                width: 20px;
+            }
+        }
+        .el-alert__content{
+            display: flex;
+            align-items: center;
+            .el-alert__description{
+                @media screen and (min-width: 1600px){
+                    font-size: 14px;
+                    line-height: 1.3;
+                }
+                @media screen and (min-width: 1680px){
+                    font-size: 16px;
+                    line-height: 1.3;
+                }
+                @media screen and (min-width: 1800px){
+                    font-size: 18px;
+                    line-height: 1.3;
+                }
+                span{
+                    text-decoration: underline;
+                    cursor: pointer;
+                }
+                a{
+                    text-decoration: underline;
+                    color: #fff;
+                }
+            }
+            .el-icon-close{
+                @media screen and (min-width: 1600px){
+                    font-size: 16px;
+                    line-height: 1.3;
+                }
+                @media screen and (min-width: 1800px){
+                    font-size: 18px;
+                    line-height: 1.3;
+                }
+            }
+        }
     }
     :deep(.dataset_body) {
         display: flex;
