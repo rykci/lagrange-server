@@ -47,7 +47,6 @@ contract SpacePayment is Ownable {
             "ERC20: allowance is too low"
         );
 
-        ladToken.approve(msg.sender, amount);
         ladToken.transferFrom(msg.sender, address(this), amount);
         balance[msg.sender] += amount;
     }
