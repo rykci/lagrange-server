@@ -47,6 +47,7 @@ contract SpacePayment is Ownable {
             "ERC20: allowance is too low"
         );
 
+        ladToken.approve(msg.sender, amount);
         ladToken.transferFrom(msg.sender, address(this), amount);
         balance[msg.sender] += amount;
     }
@@ -62,7 +63,7 @@ contract SpacePayment is Ownable {
         uint256 spaceId = spaceCounter.current();
         spaceCounter.increment();
 
-        uint256 expiryTime = block.timestamp + duration;
+        uint256 expiryTime = block.number + duration;
         balance[msg.sender] -= price;
         idToSpace[spaceId] = Space(msg.sender, hardwareType, expiryTime);
 
@@ -77,7 +78,7 @@ contract SpacePayment is Ownable {
 
         balance[msg.sender] -= price;
         if (isExpired(spaceId)) {
-            idToSpace[spaceId].expiryTime += block.timestamp + duration;
+            idToSpace[spaceId].expiryTime += block.number + duration;
         } else {
             idToSpace[spaceId].expiryTime += duration;
         }
@@ -86,7 +87,7 @@ contract SpacePayment is Ownable {
     }
 
     function isExpired(uint256 spaceId) public view returns (bool) {
-        return idToSpace[spaceId].expiryTime <= block.timestamp;
+        return idToSpace[spaceId].expiryTime <= block.number;
     }
 
     function spaceInfo(uint256 spaceId) public view returns (Space memory) {
