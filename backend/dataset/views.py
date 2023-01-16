@@ -16,6 +16,18 @@ dataset_bp = Blueprint(
 
 @app.route('/dataset', methods=['Get'])
 @jwt_required()
+def get_datasets_deprecated():
+    public_address = get_jwt_identity()
+    user = get_user(public_address)
+    datasets = Dataset.query.filter_by(user_id=user.id)
+    data_list = []
+    for dataset in datasets:
+        data_list.append(dataset.to_dict())
+    return jsonify(datasets=data_list), 200
+
+
+@app.route('/datasets', methods=['Get'])
+@jwt_required()
 def get_datasets():
     public_address = get_jwt_identity()
     user = get_user(public_address)
@@ -26,7 +38,16 @@ def get_datasets():
     return jsonify(datasets=data_list), 200
 
 
-@app.route('/dataset', methods=['POST'])
+@app.route('/datasets/<string:name>', methods=['Get'])
+@jwt_required()
+def get_dataset_detail(name):
+    public_address = get_jwt_identity()
+    user = get_user(public_address)
+    dataset = Dataset.query.filter_by(name=name).first()
+    return jsonify(dataset=dataset.to_dict()), 200
+
+
+@app.route('/datasets', methods=['POST'])
 @jwt_required()
 def create_dataset():
     public_address = get_jwt_identity()
@@ -45,7 +66,26 @@ def create_dataset():
     return jsonify(dataset=name), 200
 
 
-@app.route('/dataset/upload', methods=['POST'])
+@app.route('/datasets', methods=['PUT'])
+@jwt_required()
+def update_dataset():
+    public_address = get_jwt_identity()
+    user: User = get_user(public_address)
+
+    name = request.form.get("name")
+    data_schema = request.form.get("data_schema")
+    print(public_address)
+    print(user.nonce)
+
+    dataset = Dataset(name=name, data_schema=data_schema, user_id=user.id)
+    db.session.add(dataset)
+    db.session.commit()
+    db.session.refresh(dataset)
+
+    return jsonify(dataset=name), 200
+
+
+@app.route('/datasets/upload', methods=['POST'])
 def upload_file():
     uploaded_file = request.files['file']
     if uploaded_file.filename != '':
