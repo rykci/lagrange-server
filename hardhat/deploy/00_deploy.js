@@ -53,13 +53,19 @@ module.exports = async ({ deployments }) => {
 
     console.log("Wallet Ethereum Address:", deployer.address)
 
-    await deployLogError("LagrangeDAOToken", {
+    let token = await deployLogError("LagrangeDAOToken", {
         from: deployer.address,
         args: [],
-        // maxPriorityFeePerGas to instruct hardhat to use EIP-1559 tx format
-        maxPriorityFeePerGas: priorityFee,
+        maxPriorityFeePerGas: network.name == "wallaby" ? priorityFee : "",
+        log: true,
+    })
+
+    await deployLogError("SpacePayment", {
+        from: deployer.address,
+        args: [token.address],
+        maxPriorityFeePerGas: network.name == "wallaby" ? priorityFee : "",
         log: true,
     })
 }
 
-module.exports.tags = ["LagrangeDAOToken"]
+module.exports.tags = ["LagrangeDAOToken", "SpacePayment"]
