@@ -14,7 +14,7 @@ contract SpacePayment is Ownable {
     mapping(address => uint256) private balance;
 
     // rate is 1 LAD = $0.03
-    mapping(uint256 => uint256) public hardwareToPricePerBlock;
+    mapping(uint256 => Hardware) public idToHardware;
 
     struct Space {
         address owner;
@@ -22,22 +22,27 @@ contract SpacePayment is Ownable {
         uint256 expiryTime;
     }
 
+    struct Hardware {
+        string name;
+        uint pricePerBlock;
+    }
+
     LagrangeDAOToken public ladToken;
 
     event SpaceCreated(uint256 id, address owner, uint256 hardwareType, uint256 expiryTime);
     event ExpiryExtended(uint256 id, uint256 expiryTime);
     event EpochDurationChanged(uint256 epochDuration);
-    event HardwarePriceChanged(uint256 hardwareType, uint256 price);
+    event HardwarePriceChanged(uint256 hardwareType, string name, uint256 price);
 
     constructor(address tokenAddress) {
         ladToken = LagrangeDAOToken(tokenAddress);
 
-        hardwareToPricePerBlock[1] = 0 ether;
-        hardwareToPricePerBlock[2] = 1 ether;
-        hardwareToPricePerBlock[3] = 20 ether;
-        hardwareToPricePerBlock[4] = 30 ether;
-        hardwareToPricePerBlock[5] = 35 ether;
-        hardwareToPricePerBlock[6] = 105 ether;
+        idToHardware[1] = Hardware("CPU only, 2 vCPU, 16 GiB", 0 ether);
+        idToHardware[2] = Hardware("CPU only, 8 vCPU, 32 GiB", 1 ether);
+        idToHardware[3] = Hardware("Nvidia T4, 4 vCPU, 15 GiB", 20 ether);
+        idToHardware[4] = Hardware("Nvidia T4, 8 vCPU, 30 GiB", 30 ether);
+        idToHardware[5] = Hardware("Nvidia A10G, 4 vCPU, 15 GiB", 35 ether);
+        idToHardware[6] = Hardware("Nvidia A10G, 12 vCPU, 46 GiB", 105 ether);
     }
 
     function deposit(uint256 amount) public {
@@ -54,8 +59,12 @@ contract SpacePayment is Ownable {
         return balance[account];
     }
 
+    function hardwareInfo(uint hardwareType) public view returns (Hardware memory) {
+        return idToHardware[hardwareType];
+    }
+
     function buySpace(uint256 hardwareType, uint256 blocks) public {
-        uint256 price = hardwareToPricePerBlock[hardwareType] * blocks;
+        uint256 price = idToHardware[hardwareType].pricePerBlock * blocks;
         require(balance[msg.sender] >= price, "not enough balance");
 
         uint256 spaceId = spaceCounter.current();
@@ -71,7 +80,7 @@ contract SpacePayment is Ownable {
     function extendSpace(uint256 spaceId, uint256 blocks) public {
         Space memory space = idToSpace[spaceId];
         require(space.expiryTime > 0, "space not found");
-        uint256 price = hardwareToPricePerBlock[space.hardwareType] * blocks;
+        uint256 price = idToHardware[space.hardwareType].pricePerBlock * blocks;
         require(balance[msg.sender] >= price, "not enough balance");
 
         balance[msg.sender] -= price;
@@ -92,9 +101,9 @@ contract SpacePayment is Ownable {
         return idToSpace[spaceId];
     }
 
-    function changeHardwarePrice(uint256 hardwareType, uint256 newPrice) public onlyOwner {
-        hardwareToPricePerBlock[hardwareType] = newPrice;
-        emit HardwarePriceChanged(hardwareType, newPrice);
+    function changeHardware(uint256 hardwareType, string memory newName, uint256 newPrice) public onlyOwner {
+        idToHardware[hardwareType] = Hardware(newName, newPrice);
+        emit HardwarePriceChanged(hardwareType, newName, newPrice);
     }
 
     function withdraw(uint256 amount) public onlyOwner {

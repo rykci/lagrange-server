@@ -15,11 +15,13 @@ describe("SpacePayment", function () {
     let payment
     let accounts
     let u1
+    let spaceId
 
     describe("Deployment", function () {
         it("Should set the right owner", async function () {
             accounts = await ethers.getSigners()
             u1 = accounts[0].address
+            console.log("address:", u1)
 
             let Token = await ethers.getContractFactory("LagrangeDAOToken")
             token = await Token.deploy()
@@ -35,7 +37,8 @@ describe("SpacePayment", function () {
         it("Should mint tokens", async function () {
             accounts = await ethers.getSigners()
 
-            await token.initialize(u1)
+            let tx = await token.initialize(u1)
+            await tx.wait()
             let balance = await token.balanceOf(u1)
 
             expect(balance).to.equal(ethers.utils.parseEther("150000000"))
@@ -50,8 +53,10 @@ describe("SpacePayment", function () {
         })
 
         it("Should deposit tokens", async () => {
-            await token.approve(payment.address, ethers.utils.parseEther("1000"))
-            await payment.deposit(ethers.utils.parseEther("1000"))
+            let approveTx = await token.approve(payment.address, ethers.utils.parseEther("1000"))
+            await approveTx.wait()
+            let depositTx = await payment.deposit(ethers.utils.parseEther("1000"))
+            await depositTx.wait()
 
             let balance = await payment.balanceOf(u1)
             expect(balance).to.equal(ethers.utils.parseEther("1000"))
@@ -61,13 +66,30 @@ describe("SpacePayment", function () {
         })
 
         it("Should buy space", async () => {
-            await payment.buySpace(3, 3)
+            let paymentTx = await payment.buySpace(3, 3)
+            let paymentReceipt = await paymentTx.wait()
+            //console.log(paymentReceipt.events.find((e) => e.event == "SpaceCreated"))
+            spaceId = paymentReceipt.events.find((e) => e.event == "SpaceCreated").args.id
 
             let balance = await payment.balanceOf(u1)
             expect(balance).to.equal(ethers.utils.parseEther("940"))
 
             let info = await payment.spaceInfo(0)
             expect(info.owner).to.equal(u1)
+        })
+
+        it("Should extend space", async () => {
+            let info = await payment.spaceInfo(spaceId)
+
+            let extendTx = await payment.extendSpace(spaceId, 2)
+            await extendTx.wait()
+            let info2 = await payment.spaceInfo(spaceId)
+
+            expect(parseInt(info.expiryTime) + 2).to.be.equal(info2.expiryTime)
+        })
+
+        it("Should not allow extend non existing spaces", async () => {
+            await expect(payment.extendSpace(spaceId + 1, 2)).to.be.revertedWith("space not found")
         })
     })
 })

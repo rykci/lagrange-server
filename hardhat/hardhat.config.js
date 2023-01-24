@@ -18,6 +18,10 @@ module.exports = {
             url: process.env.rpc_endpoint,
             accounts: [PRIVATE_KEY],
         },
+        binance: {
+            url: "https://data-seed-prebsc-2-s3.binance.org:8545",
+            accounts: [PRIVATE_KEY],
+        },
     },
     paths: {
         sources: "./contracts",
