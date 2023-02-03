@@ -8,8 +8,12 @@ const PRIVATE_KEY = process.env.private_key
 /** @type import('hardhat/config').HardhatUserConfig */
 module.exports = {
     solidity: "0.8.17",
-    defaultNetwork: "wallaby",
+    defaultNetwork: "hyperspace",
     networks: {
+        hyperspace: {
+            url: "https://api.hyperspace.node.glif.io/rpc/v1",
+            accounts: [PRIVATE_KEY],
+        },
         wallaby: {
             url: "https://wallaby.node.glif.io/rpc/v0",
             accounts: [PRIVATE_KEY],
@@ -22,6 +26,10 @@ module.exports = {
             url: "https://data-seed-prebsc-2-s3.binance.org:8545",
             accounts: [PRIVATE_KEY],
         },
+    },
+    etherscan: {
+        apiKey: "NCZHD5SVRGTYANFMXHZ17E5XFZ5TRAAXBB",
+        customChains: [],
     },
     paths: {
         sources: "./contracts",

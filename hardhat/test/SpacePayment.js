@@ -25,10 +25,12 @@ describe("SpacePayment", function () {
 
             let Token = await ethers.getContractFactory("LagrangeDAOToken")
             token = await Token.deploy()
+            console.log("LAD token address:", token.address)
 
             let SpacePayment = await ethers.getContractFactory("SpacePayment")
             payment = await SpacePayment.deploy(token.address)
             await payment.deployed()
+            console.log("space payment address:", payment.address)
             //const { nft, owner } = await loadFixture(deployContracts)
 
             expect(await payment.owner()).to.equal(u1)
@@ -85,7 +87,7 @@ describe("SpacePayment", function () {
             await extendTx.wait()
             let info2 = await payment.spaceInfo(spaceId)
 
-            expect(parseInt(info.expiryTime) + 2).to.be.equal(info2.expiryTime)
+            expect(parseInt(info.expiryBlock) + 2).to.be.equal(info2.expiryBlock)
         })
 
         it("Should not allow extend non existing spaces", async () => {

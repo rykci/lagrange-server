@@ -19,7 +19,7 @@ contract SpacePayment is Ownable {
     struct Space {
         address owner;
         uint256 hardwareType;
-        uint256 expiryTime;
+        uint256 expiryBlock;
     }
 
     struct Hardware {
@@ -29,8 +29,8 @@ contract SpacePayment is Ownable {
 
     LagrangeDAOToken public ladToken;
 
-    event SpaceCreated(uint256 id, address owner, uint256 hardwareType, uint256 expiryTime);
-    event ExpiryExtended(uint256 id, uint256 expiryTime);
+    event SpaceCreated(uint256 id, address owner, uint256 hardwareType, uint256 expiryBlock);
+    event ExpiryExtended(uint256 id, uint256 expiryBlock);
     event EpochDurationChanged(uint256 epochDuration);
     event HardwarePriceChanged(uint256 hardwareType, string name, uint256 price);
 
@@ -70,31 +70,31 @@ contract SpacePayment is Ownable {
         uint256 spaceId = spaceCounter.current();
         spaceCounter.increment();
 
-        uint256 expiryTime = block.number + blocks;
+        uint256 expiryBlock = block.number + blocks;
         balance[msg.sender] -= price;
-        idToSpace[spaceId] = Space(msg.sender, hardwareType, expiryTime);
+        idToSpace[spaceId] = Space(msg.sender, hardwareType, expiryBlock);
 
-        emit SpaceCreated(spaceId, msg.sender, hardwareType, expiryTime);
+        emit SpaceCreated(spaceId, msg.sender, hardwareType, expiryBlock);
     }
 
     function extendSpace(uint256 spaceId, uint256 blocks) public {
         Space memory space = idToSpace[spaceId];
-        require(space.expiryTime > 0, "space not found");
+        require(space.expiryBlock > 0, "space not found");
         uint256 price = idToHardware[space.hardwareType].pricePerBlock * blocks;
         require(balance[msg.sender] >= price, "not enough balance");
 
         balance[msg.sender] -= price;
         if (isExpired(spaceId)) {
-            idToSpace[spaceId].expiryTime += block.number + blocks;
+            idToSpace[spaceId].expiryBlock += block.number + blocks;
         } else {
-            idToSpace[spaceId].expiryTime += blocks;
+            idToSpace[spaceId].expiryBlock += blocks;
         }
 
-        emit ExpiryExtended(spaceId, idToSpace[spaceId].expiryTime);
+        emit ExpiryExtended(spaceId, idToSpace[spaceId].expiryBlock);
     }
 
     function isExpired(uint256 spaceId) public view returns (bool) {
-        return idToSpace[spaceId].expiryTime <= block.number;
+        return idToSpace[spaceId].expiryBlock <= block.number;
     }
 
     function spaceInfo(uint256 spaceId) public view returns (Space memory) {
