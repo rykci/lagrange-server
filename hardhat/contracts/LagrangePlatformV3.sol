@@ -9,25 +9,17 @@ import "@openzeppelin/contracts/access/Ownable.sol";
  * later the backend will verify these submissions, and transfer the rewards to the users directly.
  */
 
-contract LagrangePlatformV3 is Ownable {
+contract LagrangePlatform is Ownable {
     IERC20 public lagrangeToken;
-
-    mapping(address => uint) claimBalance;
 
     event DataUpload(string wcid, uint size, uint reward);
     event ModelUpload(string wcid, uint reward);
     event Claim(address claimer, uint amount);
 
-    /// @custom:oz-upgrades-unsafe-allow constructor
     constructor(address lagrangeTokenAddress) {
         lagrangeToken = IERC20(lagrangeTokenAddress);
     }
 
-
-    /*
-    * owner rewards user
-    * user claims on their own
-    */
     function rewardDataUpload(string memory wcid, uint size) public {
         require(size > 0, "data cannot be size 0");
 
@@ -39,22 +31,12 @@ contract LagrangePlatformV3 is Ownable {
         } else {
             reward = 0.5 ether * numGB;
         }
-
-        claimBalance[msg.sender] += reward;
         emit DataUpload(wcid, size, reward);
     }
 
     function rewardModelUpload(string memory wcid) public {
         uint reward = 2 ether;
-        //require(lagrangeToken.balanceOf(address(this)) > reward, 'not enough contract balance to pay uploader');
-
-        //lagrangeToken.transfer(uploader, reward);
-        claimBalance[msg.sender] += reward;
         emit ModelUpload(wcid, reward);
-    }
-
-    function updateBalance(address account, uint balance) public onlyOwner {
-        claimBalance[account] = balance;
     }
 
     function withdraw(uint amount) public onlyOwner {
